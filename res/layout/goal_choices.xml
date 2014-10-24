@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/goal_scrollview"
+    android:layout_width ="fill_parent"
+    android:layout_height="fill_parent" >
+    <LinearLayout
+        android:id="@+id/goalLayoutVertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical" >
+		
+		<EditText
+			    android:layout_marginTop="10dp"
+			    android:id="@+id/goal_name_box"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:hint="@string/goal_name"
+			    android:layout_weight="10"
+			    android:inputType="textCapWords"/>
+			    
+		<Spinner
+		    android:id="@+id/blackmail_platform_spinner"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="10" />
+		
+		<Button 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/goal_start_date" 
+		    android:onClick="showDatePickerDialog"
+		    android:layout_weight="10" />
+		<Button 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/goal_end_date" 
+		    android:onClick="showDatePickerDialog"
+		    android:layout_weight="10" />
+		<Button 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/goal_start_time" 
+		    android:onClick="showTimePickerDialog"
+		    android:layout_weight="10" />
+		<Button 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/goal_end_time" 
+		    android:onClick="showTimePickerDialog"
+		    android:layout_weight="10" />
+		
+	</LinearLayout>
+	
+</ScrollView>
