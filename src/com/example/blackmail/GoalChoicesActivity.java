@@ -11,7 +11,9 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 
 public class GoalChoicesActivity extends FragmentActivity implements OnItemSelectedListener {
@@ -20,6 +22,14 @@ public class GoalChoicesActivity extends FragmentActivity implements OnItemSelec
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.goal_choices);
+		
+		//Make and populate the spinner that allows which platform to send a
+		//blackmail message on (Facebook, Twitter, etc.)
+		Spinner platformSpinner = (Spinner)findViewById(R.id.platform_spinner);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		        R.array.platforms_array, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		platformSpinner.setAdapter(adapter);
 	}
 
 	@Override
@@ -84,6 +94,12 @@ public class GoalChoicesActivity extends FragmentActivity implements OnItemSelec
 			
 		}
     }
+	
+	public void finishButtonClicked(View v){
+		//We should check if all of the settings have been properly filled out
+		//If they have been, then save all of the settings in SQLlite database,
+		//and transfer to the view goals activity.
+	}
 
 	
 	        

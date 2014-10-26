@@ -48,5 +48,4 @@
 		    android:onClick="showAbout"
 		    android:layout_weight="10" />
 		</LinearLayout>
-		
 </LinearLayout>
