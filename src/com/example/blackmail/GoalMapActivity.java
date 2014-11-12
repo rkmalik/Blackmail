@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,15 +32,21 @@ public class GoalMapActivity extends FragmentActivity implements LocationListene
 
 	private GoogleMap map;
 	private LocationClient lc;
+	private CameraUpdate beginCam;
 	private int numMarkers;
 	private Marker goalMarker;
+	private boolean beHere;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.goal_map);
 		lc = new LocationClient(this,this,this);
 		numMarkers = 0; //number of markers on the map
+		beHere=true;
+		beginCam = null;
 		
+		RadioButton radio = (RadioButton)findViewById(R.id.be_here_radio);
+		radio.setChecked(true);
 		View deleteButton = findViewById(R.id.deleteMarkerButton);
 		View continueButton = findViewById(R.id.continuePlanningButton);
 		deleteButton.setOnClickListener(this);
@@ -63,6 +70,8 @@ public class GoalMapActivity extends FragmentActivity implements LocationListene
 			if(map != null) {
 				map.setMyLocationEnabled(true); //Allow location button on map
 				map.setMapType(GoogleMap.MAP_TYPE_HYBRID); //Changes how map looks
+				if(beginCam != null)
+					map.moveCamera(beginCam);
 				map.setOnMapClickListener(new OnMapClickListener() {
 
 			        @Override
@@ -75,8 +84,6 @@ public class GoalMapActivity extends FragmentActivity implements LocationListene
 			    					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 			    			//Update the map
 			    			numMarkers += 1;
-			    			Toast toast = Toast.makeText(getApplicationContext(), (CharSequence)"Tried placing marker", Toast.LENGTH_SHORT);
-			    			toast.show();
 			    		}
 			        	//Tell the user only one marker can be added at a time.
 			        	else {
@@ -107,8 +114,8 @@ public class GoalMapActivity extends FragmentActivity implements LocationListene
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		Location userLoc = lc.getLastLocation();
-		CameraUpdate beginCam = CameraUpdateFactory.newLatLngZoom(new LatLng(userLoc.getLatitude(), userLoc.getLongitude()), 16f);
-		map.moveCamera(beginCam);
+		beginCam = CameraUpdateFactory.newLatLngZoom(new LatLng(userLoc.getLatitude(), userLoc.getLongitude()), 16f);
+		
 	}
 	@Override
 	public void onDisconnected() {
@@ -119,6 +126,22 @@ public class GoalMapActivity extends FragmentActivity implements LocationListene
 	@Override
 	public void onLocationChanged(Location location) {
 		//Don't care, only polling once.
+	}
+	
+	public void onRadioButtonClicked(View v){
+		boolean isChecked = ((RadioButton) v).isChecked();
+		switch(v.getId()){
+			case R.id.be_here_radio:
+				if(isChecked)
+					beHere=true;
+				break;
+			case R.id.dont_be_here_radio:
+				if(isChecked)
+					beHere = false;
+				break;
+			default:
+		}
+		
 	}
 
 	@Override
@@ -139,8 +162,19 @@ public class GoalMapActivity extends FragmentActivity implements LocationListene
 				}
 				break;
 			case R.id.continuePlanningButton:
-					Intent choices = new Intent(this, GoalChoicesActivity.class);
-					startActivity(choices);
+				    if(numMarkers == 1){
+				    	//NEED SERIALIZABLE OR PARCEABLE OR BUNDLE
+				    	//Pass Lat, Long, beHere as a DBO, along with previous DBO from goalChoices
+				    	double goalLat = goalMarker.getPosition().latitude;
+				    	double goalLong = goalMarker.getPosition().longitude;
+				    	Intent choices = new Intent(this, BlackmailChoicesActivity.class);
+				    	// choices.putExtra()
+						startActivity(choices);
+				    }
+				    else {
+				    	Toast notSoFast = Toast.makeText(getApplicationContext(), (CharSequence)"You forgot to pick a location!", Toast.LENGTH_SHORT);
+					    notSoFast.show();
+				    }
 					break;
 			default:
 				break;

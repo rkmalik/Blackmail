@@ -14,7 +14,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		//We could possibly combine the two groups of instructoins into one,
+		//We could possibly combine the two groups of instructions into one,
 		//but for further modification keeping it like this will be easier
 		View showGoalsButton = findViewById(R.id.showGoalsButton);
 		View createGoalButton = findViewById(R.id.createGoalButton);
@@ -35,9 +35,18 @@ public class MainActivity extends Activity implements OnClickListener {
 	//identify which button was clicked, then we can perform the corresponding
 	//action.
 	public void onClick(View v) {
+		Intent create;
 		switch(v.getId()){
 			case R.id.createGoalButton:
-				Intent create = new Intent(this, GoalMapActivity.class);
+				create = new Intent(this, GoalChoicesActivity.class);
+				startActivity(create);
+				break;
+			case R.id.accountSetupButton:
+				create = new Intent(this, AccountSetupActivity.class);
+				startActivity(create);
+				break;
+			case R.id.aboutButton:
+				create = new Intent(this, AboutActivity.class);
 				startActivity(create);
 				break;
 			default:
