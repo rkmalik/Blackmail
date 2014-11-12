@@ -17,7 +17,7 @@
         android:required="true"/>
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="21" />
 
     <application
@@ -30,7 +30,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDixxkpS8UCCUzDW8TmrCUOkGzlPS1dZ_U"/>
+            android:value=""/>
         <!--DO NOT LEAVE THE API KEY ABOVE IN android:value IN COMMITS
             IT IS A PRIVATE KEY, IF YOU LEAK OUR PRIVATE KEY YOU ARE THE WORST.
             IF IT IS BLANK, REINSERT IT OR THE MAP WILL NOT WORK. -->
@@ -49,6 +49,15 @@
         <activity
             android:name=".GoalChoicesActivity"
             android:label="@string/goal_choices_activity" />
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/about_activity" />
+        <activity
+            android:name=".AccountSetupActivity"
+            android:label="@string/account_setup_activity" />
+        <activity
+            android:name=".BlackmailChoicesActivity"
+            android:label="@string/blackmail_choices_activity" />
     </application>
 
 </manifest>
