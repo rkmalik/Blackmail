@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ public class GoalChoicesActivity extends FragmentActivity {
 	private TimePicker endTime;
 	private DatePicker startDate;
 	private DatePicker endDate;
+	private NumberPicker occPick;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,11 @@ public class GoalChoicesActivity extends FragmentActivity {
 		endTime = (TimePicker) findViewById(R.id.endTimePick);
 		startDate = (DatePicker) findViewById(R.id.startDatePick);
 		endDate = (DatePicker) findViewById(R.id.endDatePick);
+		occPick = (NumberPicker) findViewById(R.id.occurrencePicker);
+
+		occPick.setMinValue(1);
+		occPick.setMaxValue(100); // We could pick this value more
+									// intelligently...
 
 		// Used for setting and comparing dates
 		Calendar cal = Calendar.getInstance();
@@ -75,12 +82,21 @@ public class GoalChoicesActivity extends FragmentActivity {
 		if (nameIsGood && dateIsGood && timeIsGood) {
 			Intent goToMap = new Intent(getApplicationContext(),
 					GoalMapActivity.class);
-			// We need to implement Serializable or Parceable for our DBOs
-			// Time can be passed as two ints
-			// Date can be passed as a String
-			// Name can be passed as a String
-			// goToMap.putExtra();
+
+			// Bundle up the goodness
+			Bundle goalBundle = new Bundle();
+			goalBundle.putInt("numOcc", occPick.getValue());
+			goalBundle.putInt("startHour", startHour);
+			goalBundle.putInt("startMinute", startMinute);
+			goalBundle.putInt("endHour", endHour);
+			goalBundle.putInt("endMinute", endMinute);
+			goalBundle.putString("goalName", nameBox.getText().toString());
+			goalBundle.putString("startDate", start.getTime().toString());
+			goalBundle.putString("endDate", end.getTime().toString());
+
+			goToMap.putExtra("goalBundle", goalBundle);
 			startActivity(goToMap);
+
 		} else {
 			// Make the appropriate toast
 			String errorString = "Can't continue because:\n";

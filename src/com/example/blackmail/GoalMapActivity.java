@@ -163,12 +163,14 @@ public class GoalMapActivity extends FragmentActivity implements LocationListene
 				break;
 			case R.id.continuePlanningButton:
 				    if(numMarkers == 1){
-				    	//NEED SERIALIZABLE OR PARCEABLE OR BUNDLE
-				    	//Pass Lat, Long, beHere as a DBO, along with previous DBO from goalChoices
-				    	double goalLat = goalMarker.getPosition().latitude;
-				    	double goalLong = goalMarker.getPosition().longitude;
+				    	//Package everything up and ship it off
 				    	Intent choices = new Intent(this, BlackmailChoicesActivity.class);
-				    	// choices.putExtra()
+				    	Bundle mapBundle = new Bundle();
+				    	mapBundle.putDouble("goalLat", goalMarker.getPosition().latitude);
+				    	mapBundle.putDouble("goalLong", goalMarker.getPosition().longitude);
+				    	mapBundle.putBoolean("beHere", beHere);
+				    	choices.putExtra("goalBundle", getIntent().getExtras().getBundle("goalBundle"));
+				    	choices.putExtra("mapBundle", mapBundle);
 						startActivity(choices);
 				    }
 				    else {

@@ -4,12 +4,15 @@
     <string name="app_name">Blackmail</string>
     <string name="goal_map_activity">Goal Location Selection</string>
     <string name="goal_choices_activity">Choose Options for Goal</string>
+    <string name="message_here">Enter your blackmail message here (you have room!)</string>
     <string name="about_activity">About</string>
     <string name="blackmail_choices_activity">Blackmail Choices</string>
     <string name="account_setup_activity">Account Setup</string>
     <string name="hello_world">Hello world!</string>
     <string name="accountTitle">Click a button to set up an account!</string>
     <string name="occurrenceTitle">Number of Occurrences:</string>
+    <string name="takePicture">Take Picture</string>
+    <string name="importPicture">Import Picture</string>
     <string name="twitter">Twitter</string>
     <string name="facebook">Facebook</string>
     <string name="BMchoice">Pick your poison:</string>

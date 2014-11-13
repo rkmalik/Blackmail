@@ -66,17 +66,45 @@
         android:gravity="center"
         android:paddingTop="20dp"
         android:text="@string/backoutLabel" />
-     
-    <NumberPicker
+    
+     <NumberPicker
         android:id="@+id/backoutPicker"
+        android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+      
+    <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" > 
+	  
+	    <EditText
+	        android:id="@+id/messageBox"
+	        android:hint="@string/message_here"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="textMultiLine"
+	        android:singleLine="false" />
+	    <Button 
+		    android:id="@+id/takePictureButton"
+		    android:layout_width="match_parent" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/takePicture" 
+		    android:onClick="takePicture"
+		    android:layout_weight="1" />
+	    <Button 
+		    android:id="@+id/importPictureButton"
+		    android:layout_width="match_parent" 
+		    android:layout_height="wrap_content"
+		    android:text="@string/importPicture" 
+		    android:onClick="importPicture"
+		    android:layout_weight="1" />
+	</LinearLayout>
     
    <RelativeLayout 
 		    android:layout_gravity="bottom"
 		    android:layout_width="match_parent"
-		    android:layout_height="match_parent" >
-
+		    android:layout_height="wrap_content" >
 		<Button
 		    android:id="@+id/finishButton"
 		    android:layout_width="match_parent"
