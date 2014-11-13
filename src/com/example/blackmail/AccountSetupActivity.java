@@ -1,7 +1,10 @@
 package com.example.blackmail;
 
+import java.io.File;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -12,13 +15,14 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,6 +45,7 @@ public class AccountSetupActivity extends FragmentActivity implements OnClickLis
 	private static Twitter twitter;
 	private static RequestToken requestToken;
 
+	private ProgressDialog pDialog;
 	private static SharedPreferences mSharedPreferences;
 
 	public String tokenString;
@@ -58,8 +63,8 @@ public class AccountSetupActivity extends FragmentActivity implements OnClickLis
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.account_setup);
-		/* initializing twitter parameters from string.xml */
+		
+		// Twitter API Initializers
 		initTwitterConfigs();
 
 		/* Enabling strict mode */
@@ -67,22 +72,15 @@ public class AccountSetupActivity extends FragmentActivity implements OnClickLis
 				.permitAll().build();
 		StrictMode.setThreadPolicy(policy);
 
-		/* Setting activity layout file */
 		setContentView(R.layout.account_setup);
 
 		loginLayout = (RelativeLayout) findViewById(R.id.login_layout);
 		shareLayout = (LinearLayout) findViewById(R.id.share_layout);
 
-		/* register button click listeners */
 		findViewById(R.id.btn_login).setOnClickListener(this);
-
-		/* Check if required twitter keys are set */
-		if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret)) {
-			Toast.makeText(this, "Twitter key and secret not configured",
-					Toast.LENGTH_SHORT).show();
-			return;
-		}
-
+		findViewById(R.id.updateTwitterButton).setOnClickListener(this);
+		
+		
 		/* Initialize application preferences */
 		mSharedPreferences = getSharedPreferences(PREF_NAME, 0);
 
@@ -92,9 +90,7 @@ public class AccountSetupActivity extends FragmentActivity implements OnClickLis
 		/* if already logged in, then hide login layout and show share layout */
 		if (isLoggedIn) {
 			loginLayout.setVisibility(View.GONE);
-			Log.d("LS", "Login layout gone");
 			shareLayout.setVisibility(View.VISIBLE);
-			Log.d("LS", "Share layout should be shown");
 		} else {
 			loginLayout.setVisibility(View.VISIBLE);
 			shareLayout.setVisibility(View.GONE);
@@ -129,6 +125,9 @@ public class AccountSetupActivity extends FragmentActivity implements OnClickLis
 			}
 
 		}
+		
+		
+		//Facebook API intializers
 	}
 
 	/**
@@ -243,9 +242,83 @@ public class AccountSetupActivity extends FragmentActivity implements OnClickLis
 		case R.id.btn_login:
 			loginToTwitter();
 			break;
+		case R.id.updateTwitterButton:
+			new updateTwitterStatus().execute("Input Text");
+			break;
 		}
 	}
 		
-		
-		
+	class updateTwitterStatus extends AsyncTask<String, String, Void> {
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+
+			pDialog = new ProgressDialog(AccountSetupActivity.this);
+			pDialog.setMessage("Posting to twitter...");
+			pDialog.setIndeterminate(false);
+			pDialog.setCancelable(false);
+			pDialog.show();
+		}
+
+		protected Void doInBackground(String... args) {
+
+			String status = args[0];
+			try {
+				ConfigurationBuilder builder = new ConfigurationBuilder();
+				builder.setOAuthConsumerKey(getString(R.string.twitter_consumer_key));
+				builder.setOAuthConsumerSecret(getString(R.string.twitter_consumer_secret));
+
+				// Access Token - Instead of preferences get from db
+				String access_token = mSharedPreferences.getString(
+						PREF_KEY_OAUTH_TOKEN, "");
+
+				// Access Token Secret - Instead of preferences get from db
+				String access_token_secret = mSharedPreferences.getString(
+						PREF_KEY_OAUTH_SECRET, "");
+
+				AccessToken accessToken = new AccessToken(access_token,
+						access_token_secret);
+				Twitter twitter = new TwitterFactory(builder.build())
+						.getInstance(accessToken);
+				
+				// Update status
+				StatusUpdate statusUpdate = new StatusUpdate(status);
+
+				// File dir = Environment.getExternalStorageDirectory();
+				// File yourFile = new File(dir,
+				// "Pictures/Screenshots/Green_Cat.png");
+
+				// Need string path of image you want to upload
+				File yourFile = new File(
+						"/sdcard/Pictures/Messenger/reflection_mario.jpeg");
+
+				// InputStream is =
+				// getResources().openRawResource(R.drawable.lakeside_view);
+				// statusUpdate.setMedia("test.jpg", is);
+				statusUpdate.setMedia(yourFile);
+
+				twitter4j.Status response = twitter.updateStatus(statusUpdate);
+
+
+				Log.d("Status", response.getText());
+
+			} catch (TwitterException e) {
+				Log.d("Failed to post!", e.getMessage());
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+
+			/* Dismiss the progress dialog after sharing */
+			pDialog.dismiss();
+
+			Toast.makeText(AccountSetupActivity.this, "Posted to Twitter!",
+					Toast.LENGTH_SHORT).show();
+
+		}
+
 	}
+		
+}

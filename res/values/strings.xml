@@ -42,6 +42,8 @@
     <string name="finish">Finish Setup</string>
     <string name="loggedTwitter">Logged into Twitter</string>
     <string name="login_to_twitter">Login to Twitter</string>
+    <string name="login_to_facebook">Login to Facebook</string>
+    <string name="loggedFacebook">Logged into Facebook</string>
     <string name="login_to_social">Register for Facebook or Twitter</string>
    <string name="twitter_callback">http://blackmail.android.app</string>
     <string name="twitter_consumer_key">WTchQTjvGFsbswbW6FTF8kFCL</string>
@@ -52,5 +54,6 @@
     <string name="test_update_status">Update Twitter Status</string>
     <string name="btn_share">Share</string>
     <string name="hello">Hello</string>
+    <string name="test_twitter">Post set string and image</string>
 
 </resources>
