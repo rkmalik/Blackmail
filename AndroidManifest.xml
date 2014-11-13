@@ -59,8 +59,24 @@
             android:name=".AboutActivity"
             android:label="@string/about_activity" />
         <activity
-            android:name=".AccountSetupActivity"
-            android:label="@string/account_setup_activity" />
+            android:name="com.example.blackmail.AccountSetupActivity"
+            android:label="@string/account_setup_activity">  
+
+            <intent-filter>
+                <action android:name="android.intent.action.View" />
+                <category android:name="android.intent.category.DEFAULT"/>
+    			<category android:name="android.intent.category.BROWSABLE"/>
+    			
+    			 <data
+                    android:host="t4jsample"
+                    android:scheme="oauth" />
+
+              <!--  <category android:name="android.intent.category.LAUNCHER" /> -->
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.blackmail.WebViewActivity"
+            android:label="@string/app_name" />
         <activity
             android:name=".BlackmailChoicesActivity"
             android:label="@string/blackmail_choices_activity" />
