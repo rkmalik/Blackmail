@@ -12,7 +12,7 @@ public class WebViewActivity extends Activity {
 	
 	private WebView webView;
 	
-	public static String EXTRA_URL = "extra_url";
+	public static String requestURL = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,32 +20,32 @@ public class WebViewActivity extends Activity {
 		
 		setContentView(R.layout.activity_webview);
 		
-		setTitle("Login");
+		setTitle("Login to Twitter");
 
-		final String url = this.getIntent().getStringExtra(EXTRA_URL);
+		String url = this.getIntent().getStringExtra(requestURL);
 		if (null == url) {
 			Log.e("Twitter", "URL cannot be null");
 			finish();
 		}
 
 		webView = (WebView) findViewById(R.id.webView);
-		webView.setWebViewClient(new MyWebViewClient());
+		webView.setWebViewClient(new webClient());
 		webView.loadUrl(url);
 	}
 
 
-	class MyWebViewClient extends WebViewClient {
+	class webClient extends WebViewClient {
 		
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-			if (url.contains(getResources().getString(R.string.twitter_callback))) {
+			if (url.contains("http://blackmail.android.app")) {
 				Uri uri = Uri.parse(url);
 				
 				/* Sending results back */
-				String verifier = uri.getQueryParameter(getString(R.string.twitter_oauth_verifier));
+				String verifier = uri.getQueryParameter("oauth_verifier");
 				Intent resultIntent = new Intent();
-				resultIntent.putExtra(getString(R.string.twitter_oauth_verifier), verifier);
+				resultIntent.putExtra("oauth_verifier", verifier);
 				setResult(RESULT_OK, resultIntent);
 				
 				/* closing webview */
