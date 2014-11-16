@@ -4,12 +4,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.blackmail.DBObjects.API_Master;
+
 // THE DATABASE HANDLER
 public class BlackmailDBHandler extends SQLiteOpenHelper {
 
 	// All Static variables
 	// Database Version
-	private static final int DATABASE_VERSION = 1;
+	protected static final int DATABASE_VERSION = 1;
 
 	// Database Name
 	protected static final String DATABASE_NAME = "BlackmailDB";
@@ -38,16 +40,25 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 	protected static final String API_MASTER_KEY_APITYPEID = "ApiTypeId";
 	protected static final String API_MASTER_KEY_APINAME = "ApiName";
 	protected static final String API_MASTER_KEY_APITABLENAME = "ApiTableName";
+	protected static final String API_MASTER_KEY_ACCESSTOKEN = "AccessToken";
+	protected static final String API_MASTER_KEY_ACCESSTOKENSECRET = "AccessTokenSecret";
 	protected static final String API_MASTER_KEY_CREATEDDATE = "CreatedDate";
 	protected static final String API_MASTER_KEY_ISACTIVE = "IsActive";
 
 	// Table API_INFO_FACEBOOK Column Names
 	protected static final String API_INFO_FACEBOOK_KEY_MOTIVATIONID = "Motivation_Id";
+	protected static final String API_INFO_FACEBOOK_KEY_ACCESSTOKEN = "AccessToken";
+	protected static final String API_INFO_FACEBOOK_KEY_STATUS = "Status";
+	protected static final String API_INFO_FACEBOOK_KEY_IMAGEPATH = "ImagePath";
 	protected static final String API_INFO_FACEBOOK_KEY_CREATEDDATE = "CreatedDate";
 	protected static final String API_INFO_FACEBOOK_KEY_ISACTIVE = "IsActive";
 
 	// Table API_INFO_TWITTER Column Names
 	protected static final String API_INFO_TWITTER_KEY_MOTIVATIONID = "Motivation_Id";
+	protected static final String API_INFO_TWITTER_KEY_ACCESSTOKEN = "AccessToken";
+	protected static final String API_INFO_TWITTER_KEY_ACCESSTOKENSECRET = "AccessTokenSecret";
+	protected static final String API_INFO_TWITTER_KEY_STATUS = "Status";
+	protected static final String API_INFO_TWITTER_KEY_IMAGEPATH = "ImagePath";
 	protected static final String API_INFO_TWITTER_KEY_CREATEDDATE = "CreatedDate";
 	protected static final String API_INFO_TWITTER_KEY_ISACTIVE = "IsActive";
 
@@ -56,7 +67,7 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 	protected static final String MOTIVATION_KEY_MOTIVATIONTEXT = "MotivationText";
 	protected static final String MOTIVATION_KEY_MOTIVATIONSTARTDATE = "MotivationStartDate";
 	protected static final String MOTIVATION_KEY_MOTIVATIONENDDATE = "MotivationEndDate";
-	protected static final String MOTIVATION_KEY_DURATION = "Duration";
+	// protected static final String MOTIVATION_KEY_DURATION = "Duration";
 	protected static final String MOTIVATION_KEY_NOOFOCCURRENCES = "NoOfOccurrences";
 	protected static final String MOTIVATION_KEY_MOTIVATIONTIME = "MotivationTime";
 	protected static final String MOTIVATION_KEY_ISLOCKED = "IsLocked";
@@ -91,8 +102,11 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 	protected static final String MOTIVATION_SCHEDULE_KEY_CREATEDDATE = "CreatedDate";
 	protected static final String MOTIVATION_SCHEDULE_KEY_ISACTIVE = "IsActive";
 
+	Context FromContext;
+
 	public BlackmailDBHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		FromContext = context;
 	}
 
 	// Creating Tables
@@ -106,6 +120,8 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 		CREATE_BLACKMAIL_TABLE(db);
 		CREATE_GPS_LOCATION_TABLE(db);
 		CREATE_MOTIVATION_SCHEDULE_TABLE(db);
+
+		INSERT_API_MASTER_INITIAL();
 	}
 
 	// Upgrading database
@@ -137,7 +153,7 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 				+ USER_APP_DATA_KEY_CONTACTNO + " INTEGER,"
 				+ USER_APP_DATA_KEY_APPVERSION + " INTEGER,"
 				+ USER_APP_DATA_KEY_DBVERSION + "INTEGER,"
-				+ USER_APP_DATA_KEY_CREATEDDATE + " INTEGER,"
+				+ USER_APP_DATA_KEY_CREATEDDATE + " TEXT,"
 				+ USER_APP_DATA_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_USER_APP_DATA_TABLE);
@@ -152,10 +168,41 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 				+ "(" + API_MASTER_KEY_APITYPEID + " INTEGER,"
 				+ API_MASTER_KEY_APINAME + " TEXT,"
 				+ API_MASTER_KEY_APITABLENAME + " TEXT,"
-				+ API_MASTER_KEY_CREATEDDATE + " INTEGER,"
+				+ API_MASTER_KEY_ACCESSTOKEN + "TEXT,"
+				+ API_MASTER_KEY_ACCESSTOKENSECRET + "TEXT"
+				+ API_MASTER_KEY_CREATEDDATE + " TEXT,"
 				+ API_MASTER_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_API_MASTER_TABLE);
+	}
+
+	private void INSERT_API_MASTER_INITIAL() {
+		DBObjects db = new DBObjects();
+		API_Master apitwitter = db.new API_Master();
+		API_Master apifacebook = db.new API_Master();
+
+		apitwitter.APITypeId = 1;
+		apitwitter.APIName = "Twitter API";
+		apitwitter.APITableName = TABLE_API_INFO_TWITTER;
+		apitwitter.AccessToken = "";
+		apitwitter.AccessTokenSecret = "";
+		apitwitter.CreatedDate = new java.sql.Date(
+				new java.util.Date().getTime());
+		apitwitter.IsActive = true;
+
+		apifacebook.APITypeId = 2;
+		apifacebook.APIName = "Facebook API";
+		apifacebook.APITableName = TABLE_API_INFO_FACEBOOK;
+		apifacebook.AccessToken = "";
+		apifacebook.AccessTokenSecret = "";
+		apifacebook.CreatedDate = new java.sql.Date(
+				new java.util.Date().getTime());
+		apifacebook.IsActive = true;
+
+		DBWrapper wrapper = new DBWrapper(FromContext);
+
+		wrapper.Insert_API_Master_Data(apitwitter);
+		wrapper.Insert_API_Master_Data(apifacebook);
 	}
 
 	/*
@@ -165,7 +212,10 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 		String CREATE_API_INFO_FACEBOOK_TABLE = "CREATE TABLE "
 				+ TABLE_API_INFO_FACEBOOK + "("
 				+ API_INFO_FACEBOOK_KEY_MOTIVATIONID + "INTEGER,"
-				+ API_INFO_FACEBOOK_KEY_CREATEDDATE + " INTEGER,"
+				+ API_INFO_FACEBOOK_KEY_ACCESSTOKEN + "TEXT,"
+				+ API_INFO_FACEBOOK_KEY_STATUS + "TEXT,"
+				+ API_INFO_FACEBOOK_KEY_IMAGEPATH + "TEXT"
+				+ API_INFO_FACEBOOK_KEY_CREATEDDATE + " TEXT,"
 				+ API_INFO_FACEBOOK_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_API_INFO_FACEBOOK_TABLE);
@@ -178,7 +228,11 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 		String CREATE_API_INFO_TWITTER_TABLE = "CREATE TABLE "
 				+ TABLE_API_INFO_TWITTER + "("
 				+ API_INFO_TWITTER_KEY_MOTIVATIONID + "INTEGER,"
-				+ API_INFO_TWITTER_KEY_CREATEDDATE + " INTEGER,"
+				+ API_INFO_TWITTER_KEY_ACCESSTOKEN + "TEXT,"
+				+ API_INFO_TWITTER_KEY_ACCESSTOKENSECRET + "TEXT,"
+				+ API_INFO_TWITTER_KEY_STATUS + "TEXT,"
+				+ API_INFO_TWITTER_KEY_IMAGEPATH + "TEXT"
+				+ API_INFO_TWITTER_KEY_CREATEDDATE + " TEXT,"
 				+ API_INFO_TWITTER_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_API_INFO_TWITTER_TABLE);
@@ -189,16 +243,20 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 	 */
 	private void CREATE_MOTIVATION_TABLE(SQLiteDatabase db) {
 		String CREATE_MOTIVATION_TABLE = "CREATE TABLE " + TABLE_MOTIVATION
-				+ "(" + MOTIVATION_KEY_MOTIVATIONID + "INTEGER,"
-				+ MOTIVATION_KEY_MOTIVATIONTEXT + "TEXT,"
-				+ MOTIVATION_KEY_MOTIVATIONSTARTDATE + "INTEGER,"
-				+ MOTIVATION_KEY_MOTIVATIONENDDATE + "INTEGER,"
-				+ MOTIVATION_KEY_DURATION + "INTEGER,"
+				+ "(" + MOTIVATION_KEY_MOTIVATIONID
+				+ "INTEGER,"
+				+ MOTIVATION_KEY_MOTIVATIONTEXT
+				+ "TEXT,"
+				+ MOTIVATION_KEY_MOTIVATIONSTARTDATE
+				+ "TEXT,"
+				+ MOTIVATION_KEY_MOTIVATIONENDDATE
+				+ "TEXT,"
+				// + MOTIVATION_KEY_DURATION + "INTEGER,"
 				+ MOTIVATION_KEY_NOOFOCCURRENCES + "INTEGER,"
-				+ MOTIVATION_KEY_MOTIVATIONTIME + "INTEGER,"
+				+ MOTIVATION_KEY_MOTIVATIONTIME + "TEXT,"
 				+ MOTIVATION_KEY_ISLOCKED + "INTEGER,"
 				+ MOTIVATION_KEY_ISCOMPLETED + "INTEGER,"
-				+ MOTIVATION_KEY_CREATEDDATE + " INTEGER,"
+				+ MOTIVATION_KEY_CREATEDDATE + " TEXT,"
 				+ MOTIVATION_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_MOTIVATION_TABLE);
@@ -215,7 +273,7 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 				+ BLACKMAIL_KEY_BLACKMAILIMAGEPATH + "TEXT,"
 				+ BLACKMAIL_KEY_NOOFBACKOUTS + "INTEGER,"
 				+ BLACKMAIL_KEY_ISVALID + "INTEGER," + BLACKMAIL_KEY_STATUS
-				+ "TEXT," + BLACKMAIL_KEY_CREATEDDATE + " INTEGER,"
+				+ "TEXT," + BLACKMAIL_KEY_CREATEDDATE + " TEXT,"
 				+ BLACKMAIL_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_BLACKMAIL_TABLE);
@@ -230,7 +288,7 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 				+ GPS_LOCATION_KEY_LATITUDE + "INTEGER,"
 				+ GPS_LOCATION_KEY_LONGITUDE + "INTEGER,"
 				+ GPS_LOCATION_KEY_CHECK + "INTEGER,"
-				+ GPS_LOCATION_KEY_CREATEDDATE + " INTEGER,"
+				+ GPS_LOCATION_KEY_CREATEDDATE + " TEXT,"
 				+ GPS_LOCATION_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_GPS_LOCATION_TABLE);
@@ -243,10 +301,10 @@ public class BlackmailDBHandler extends SQLiteOpenHelper {
 		String CREATE_MOTIVATION_SCHEDULE_TABLE = "CREATE TABLE "
 				+ TABLE_MOTIVATION_SCHEDULE + "("
 				+ MOTIVATION_SCHEDULE_KEY_MOTIVATIONID + "INTEGER,"
-				+ MOTIVATION_SCHEDULE_KEY_FORDATE + "INTEGER,"
-				+ MOTIVATION_SCHEDULE_KEY_FORTIME + "INTEGER,"
+				+ MOTIVATION_SCHEDULE_KEY_FORDATE + "TEXT,"
+				+ MOTIVATION_SCHEDULE_KEY_FORTIME + "TEXT,"
 				+ MOTIVATION_SCHEDULE_KEY_STATUS + "TEXT,"
-				+ MOTIVATION_SCHEDULE_KEY_CREATEDDATE + " INTEGER,"
+				+ MOTIVATION_SCHEDULE_KEY_CREATEDDATE + " TEXT,"
 				+ MOTIVATION_SCHEDULE_KEY_ISACTIVE + "INTEGER)";
 
 		db.execSQL(CREATE_MOTIVATION_SCHEDULE_TABLE);
